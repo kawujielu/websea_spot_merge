@@ -5,6 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 pkill -f "launcher_dex_server/price_dex_server.py" || true
 
-nohup "$PYTHON_DIR/python3.11" "$CODE_DIR/launcher_dex_server/price_dex_server.py" \
+nohup "$PYTHON_BIN" "$CODE_DIR/launcher_dex_server/price_dex_server.py" \
   >> "$LOG_DIR/price_dex_server.log" 2>&1 &
 echo "started dex_price -> $LOG_DIR/price_dex_server.log"

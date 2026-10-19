@@ -1,4 +1,4 @@
-name: trading_copy
+name: trading
 channels:
   - defaults
 dependencies:

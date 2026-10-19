@@ -13,15 +13,22 @@ fi
 export WEBSEA_FORCE_ONLINE="${WEBSEA_FORCE_ONLINE:-1}"
 
 PYTHON_DIR="${PYTHON_DIR:-/home/ubuntu/miniconda3/envs/spot_market_maker/bin}"
+PYTHON_BIN="$PYTHON_DIR/python3.11"
+
+if [ ! -x "$PYTHON_BIN" ]; then
+  echo "ERROR: 找不到 $PYTHON_BIN" >&2
+  echo "请先: conda create -y -n spot_market_maker python=3.11 && pip install -r requirements.txt" >&2
+  exit 1
+fi
 
 pkill -f 'manage.py run SERVER=' || true
 sleep 1
 
-nohup "$PYTHON_DIR/python3.11" manage.py run SERVER=1 >> nohup.out 2>&1 &
+nohup "$PYTHON_BIN" manage.py run SERVER=1 >> nohup.out 2>&1 &
 sleep 1
-nohup "$PYTHON_DIR/python3.11" manage.py run SERVER=2 >> nohup.out 2>&1 &
+nohup "$PYTHON_BIN" manage.py run SERVER=2 >> nohup.out 2>&1 &
 sleep 1
-nohup "$PYTHON_DIR/python3.11" manage.py run SERVER=3 >> nohup.out 2>&1 &
+nohup "$PYTHON_BIN" manage.py run SERVER=3 >> nohup.out 2>&1 &
 sleep 1
 
 ps aux | grep -E 'manage.py run SERVER=' | grep -v grep || true
