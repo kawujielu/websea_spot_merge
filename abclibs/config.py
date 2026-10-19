@@ -2681,9 +2681,10 @@ MAX_CONTRACT_ASK_BID_VALID_TIME = 15  # 合约买卖一价格 redis在此时间�
 if DEBUG:
     REDIS_MASTER = ["18.140.249.184", 6379, "A(?xvw8~v(ke0(O,=Se!W(!UGBujuh(XkBHuQTRu2>r,v9rsl+B-SUsQBQYC6*yA"]
 else:
-    REDIS_MASTER = ["market-price-001.market-price.sg6zxz.apse1.cache.amazonaws.com",
-                    6379,
-                    "A(?xvw8~v(ke0(O,=Se!W(!UGBujuh(XkBHuQTRu2>r,v9rsl+B-SUsQBQYC6*yA"]
+    # REDIS_MASTER = ["market-price-001.market-price.sg6zxz.apse1.cache.amazonaws.com",
+    #                 6379,
+    #                 "A(?xvw8~v(ke0(O,=Se!W(!UGBujuh(XkBHuQTRu2>r,v9rsl+B-SUsQBQYC6*yA"]
+    REDIS_MASTER = ["10.67.3.134", 6379, "TawSjHbhiHuRPLWs"]
 
 RS_CONF_MARKET_PRICE = {
     'host': REDIS_MASTER[0], 'port': REDIS_MASTER[1], 'password': REDIS_MASTER[2], 'db': 1

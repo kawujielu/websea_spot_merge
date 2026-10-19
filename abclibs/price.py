@@ -24,7 +24,8 @@ CONTRACT_SYMBOLS_PRECISION = {}
 
 
 def redis_db_generate(redis_config):
-    protocol_ssl = {} if libs_config.DEBUG else {"ssl": True, "ssl_cert_reqs": "none"}
+    # protocol_ssl = {} if libs_config.DEBUG else {"ssl": True, "ssl_cert_reqs": "none"}
+    protocol_ssl = {}  # 自建 Redis 无 SSL；连回 ElastiCache 再恢复
 
     return redis.StrictRedis(host=redis_config["host"],
                              port=redis_config["port"],

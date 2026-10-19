@@ -29,7 +29,8 @@ class RedisAsync(object):
     @property
     def async_connection(self):
         session_name = threading.current_thread().name
-        protocol_ssl = {} if libs_config.DEBUG else {"ssl": True, "ssl_context": ssl._create_unverified_context()}
+        # protocol_ssl = {} if libs_config.DEBUG else {"ssl": True, "ssl_context": ssl._create_unverified_context()}
+        protocol_ssl = {}  # 自建 Redis 无 SSL
 
         if not self._async_connection.get(session_name):
             self._async_connection[session_name] = StrictRedis(host=self.redis_config["host"],
