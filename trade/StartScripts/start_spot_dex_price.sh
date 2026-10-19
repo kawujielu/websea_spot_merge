@@ -1,7 +1,10 @@
-export PYTHONPATH=..
-PYTHON_DIR=/home/ubuntu/miniconda3/envs/trading/bin
-CODE_DIR=/home/ubuntu/code/trade
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/_env.sh"
 
-pkill -f "launcher_dex_server/price_dex_server.py"
+pkill -f "launcher_dex_server/price_dex_server.py" || true
 
-nohup $PYTHON_DIR/python3.11 $CODE_DIR/launcher_dex_server/price_dex_server.py >> $CODE_DIR/StartScripts/log/price_dex_server.log  &
+nohup "$PYTHON_DIR/python3.11" "$CODE_DIR/launcher_dex_server/price_dex_server.py" \
+  >> "$LOG_DIR/price_dex_server.log" 2>&1 &
+echo "started dex_price -> $LOG_DIR/price_dex_server.log"

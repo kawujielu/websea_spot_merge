@@ -1,7 +1,10 @@
-export PYTHONPATH=..
-PYTHON_DIR=/home/ubuntu/miniconda3/envs/trading/bin
-CODE_DIR=/home/ubuntu/code/trade
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/_env.sh"
 
-pkill -f "launcher_contract/contract_close.py"
+pkill -f "launcher_contract/contract_close.py" || true
 
-nohup $PYTHON_DIR/python3.11 $CODE_DIR/launcher_contract/contract_close.py >> $CODE_DIR/StartScripts/log/contract_close.log &
+nohup "$PYTHON_DIR/python3.11" "$CODE_DIR/launcher_contract/contract_close.py" \
+  >> "$LOG_DIR/contract_close.log" 2>&1 &
+echo "started contract_close -> $LOG_DIR/contract_close.log"

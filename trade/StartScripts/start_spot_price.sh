@@ -1,7 +1,10 @@
-export PYTHONPATH=..
-PYTHON_DIR=/home/ubuntu/miniconda3/envs/trading/bin
-CODE_DIR=/home/ubuntu/code/trade
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/_env.sh"
 
-pkill -f "launcher_spot_price_server/spot_price.py"
+pkill -f "launcher_spot_price_server/spot_price.py" || true
 
-nohup $PYTHON_DIR/python3.11 $CODE_DIR/launcher_spot_price_server/spot_price.py >> $CODE_DIR/StartScripts/log/spot_price.log  &
+nohup "$PYTHON_DIR/python3.11" "$CODE_DIR/launcher_spot_price_server/spot_price.py" \
+  >> "$LOG_DIR/spot_price.log" 2>&1 &
+echo "started spot_price -> $LOG_DIR/spot_price.log"

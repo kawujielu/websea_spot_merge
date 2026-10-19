@@ -1,7 +1,10 @@
-export PYTHONPATH=..
-PYTHON_DIR=/home/ubuntu/miniconda3/envs/trading/bin
-CODE_DIR=/home/ubuntu/code/trade
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/_env.sh"
 
-pkill -f "launcher_volume_maker/volume_maker_ws_source.py"
+pkill -f "launcher_volume_maker/volume_maker_ws_source.py" || true
 
-nohup $PYTHON_DIR/python3.11 $CODE_DIR/launcher_volume_maker/volume_maker_ws_source.py >> $CODE_DIR/StartScripts/log/volume_maker_ws_source.log &
+nohup "$PYTHON_DIR/python3.11" "$CODE_DIR/launcher_volume_maker/volume_maker_ws_source.py" \
+  >> "$LOG_DIR/volume_maker_ws_source.log" 2>&1 &
+echo "started volume_ws_source -> $LOG_DIR/volume_maker_ws_source.log"
