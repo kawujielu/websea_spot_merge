@@ -1,0 +1,15 @@
+*.zip
+*.bin
+gc.properties
+*.lock
+*.properties
+*.out
+*.txt
+*.json
+*.idea
+*.xml
+some
+__pycache__/
+*.py[cod]
+*$py.class
+output/
