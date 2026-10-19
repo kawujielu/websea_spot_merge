@@ -1,22 +1,23 @@
-import os
-from load import load_remote
+import sys
+from pathlib import Path
 
-# 单机整合默认本机；需保证 ubuntu 可免密 ssh server@127.0.0.1
-# 过渡期若 abclibs 仍在旧机：export ABCLIBS_HOST=10.0.209.181
-REMOTE_IP = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
-REMOTE_INTERNAL_IP = REMOTE_IP
+_MERGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_MERGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_MERGE_ROOT))
 
-libs_config = load_remote.urllib_model("server@{}".format(REMOTE_IP), "/home/server/abclibs/config.py")
-libs_price = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/price.py")
-libs_price_async = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/price_async.py")
-libs_account = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/account.py")
-libs_dex_config = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/dex_config.py")
+from abclibs import config as libs_config
+from abclibs import price as libs_price
+from abclibs import price_async as libs_price_async
+from abclibs import account as _libs_account_mod
+from abclibs import dex_config as libs_dex_config
+
+# 兼容旧代码里偶发引用
+REMOTE_INTERNAL_IP = "127.0.0.1"
 
 if libs_config.DEBUG:
-    libs_account = libs_account.account_test
+    libs_account = _libs_account_mod.account_test
 else:
-    libs_account = libs_account.account
-
+    libs_account = _libs_account_mod.account
 
 s_dex_mappers = libs_dex_config.s_dex_mappers
 

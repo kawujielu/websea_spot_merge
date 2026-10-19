@@ -1,14 +1,16 @@
-import os
-from load import load_remote
+import sys
+from pathlib import Path
 
-# 单机整合默认本机；过渡期 export ABCLIBS_HOST=10.0.209.181
-REMOTE_IP = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
-REMOTE_INTERNAL_IP = REMOTE_IP
+_MERGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_MERGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_MERGE_ROOT))
 
-libs_config = load_remote.urllib_model("server@{}".format(REMOTE_IP), "/home/server/abclibs/config.py")
-libs_price_async = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/price_async.py")
-libs_accounts = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/account.py")
-libs_dex_config = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/dex_config.py")
+from abclibs import config as libs_config
+from abclibs import price_async as libs_price_async
+from abclibs import account as libs_accounts
+from abclibs import dex_config as libs_dex_config
+
+REMOTE_INTERNAL_IP = "127.0.0.1"
 
 if libs_config.DEBUG:
     libs_account = libs_accounts.account_test

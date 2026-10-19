@@ -3,17 +3,14 @@ import ssl
 import time
 import threading
 import asyncio
-from load import load_remote
 from aredis import StrictRedis
 import json
 
 
 try:
     from . import config as libs_config
-except:
-    import os
-    LIBS_HOST = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
-    libs_config = load_remote.urllib_model(f"server@{LIBS_HOST}", "/home/server/abclibs/config.py")
+except ImportError:
+    import config as libs_config
 
 USDT_AQ_PRICE = None
 USDT_AQ_UPDATE = 0

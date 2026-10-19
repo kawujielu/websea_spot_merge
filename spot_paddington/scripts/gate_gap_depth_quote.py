@@ -204,17 +204,14 @@ def _mask_secret(value: str) -> str:
 
 
 def _bootstrap_libs_debug_if_needed() -> None:
-    """本机无 load 时模拟 libs.DEBUG=True，与 account_config 测试账户一致。"""
+    """本机无法完整加载 libs 时模拟 DEBUG=True，与 account_config 测试账户一致。"""
     import types
 
-    if "load" in sys.modules:
+    if "libs" in sys.modules:
         return
     try:
-        import load  # noqa: F401
-    except ModuleNotFoundError:
-        load_mod = types.ModuleType("load")
-        load_mod.load_remote = types.ModuleType("load.load_remote")
-        sys.modules["load"] = load_mod
+        import libs  # noqa: F401
+    except Exception:
         libs_mod = types.ModuleType("libs")
         libs_mod.libs_config = types.SimpleNamespace(DEBUG=True)
         libs_mod.libs_ex_account = {}

@@ -1,12 +1,8 @@
 
-from load import load_remote
-
 try:
     from . import config as libs_config
-except:
-    import os
-    LIBS_HOST = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
-    libs_config = load_remote.urllib_model(f"server@{LIBS_HOST}", "/home/server/abclibs/config.py")
+except ImportError:
+    import config as libs_config
 
 ExchangeCode = libs_config.ExchangeCode
 

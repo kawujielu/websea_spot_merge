@@ -2632,9 +2632,10 @@ def launch_env():
         management : ip-10-0-208-223
         spot_market_maker_btc : "ip-10-0-208-197"
 
-        单机整合（8C16G AWS Ubuntu）：
+        单机整合（AWS Ubuntu，代码在 websea_spot_merge）：
         - WEBSEA_ONLINE_HOST=<hostname> 把新机加入白名单（可逗号分隔）
         - 或 WEBSEA_FORCE_ONLINE=1 强制线上模式（DEBUG=False）
+        - abclibs 由各项目本地 import，不再经 SSH/load_remote
     """
 
     online_server_list = ["ip-10-0-209-181",

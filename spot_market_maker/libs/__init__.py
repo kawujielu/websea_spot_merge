@@ -1,19 +1,16 @@
-import os
-from load import load_remote
+import sys
+from pathlib import Path
 
-# 单机整合默认本机；过渡期 export ABCLIBS_HOST=10.0.209.181
-SERVER_REMOTE_IP = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
+_MERGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_MERGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_MERGE_ROOT))
 
-libs_price_async = load_remote.urllib_model(f"server@{SERVER_REMOTE_IP}", f"/home/server/abclibs/price_async.py")
-libs_price = load_remote.urllib_model(f"server@{SERVER_REMOTE_IP}", f"/home/server/abclibs/price.py")
-libs_account = load_remote.urllib_model(f"server@{SERVER_REMOTE_IP}", f"/home/server/abclibs/account.py")
-libs_config = load_remote.urllib_model(f"server@{SERVER_REMOTE_IP}", f"/home/server/abclibs/config.py")
+from abclibs import price_async as libs_price_async
+from abclibs import price as libs_price
+from abclibs import account as _libs_account_mod
+from abclibs import config as libs_config
+
 if libs_config.DEBUG:
-    libs_account = libs_account.account_test
+    libs_account = _libs_account_mod.account_test
 else:
-    libs_account = libs_account.account
-
-# from abclibs import price_async as libs_price_async
-# from abclibs import account as libs_account
-# from abclibs import config as libs_config
-# libs_account = libs_account.account
+    libs_account = _libs_account_mod.account

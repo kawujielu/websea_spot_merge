@@ -1,13 +1,15 @@
-import os
-from load import load_remote
+import sys
+from pathlib import Path
 
-# 单机整合默认本机；过渡期 export ABCLIBS_HOST=10.0.209.181
-# 前置：ubuntu 可免密 ssh server@127.0.0.1 且 /home/server/abclibs 已部署
-REMOTE_IP = os.environ.get("ABCLIBS_HOST", "127.0.0.1")
-libs_account = load_remote.urllib_model("server@{}".format(REMOTE_IP), "/home/server/abclibs/account.py")
-libs_config = load_remote.urllib_model("server@{}".format(REMOTE_IP), "/home/server/abclibs/config.py")
-libs_dex_config = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/dex_config.py")
-libs_price_async = load_remote.urllib_model("server@{}".format(REMOTE_IP, ), "/home/server/abclibs/price_async.py")
+_MERGE_ROOT = Path(__file__).resolve().parents[2]
+if str(_MERGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_MERGE_ROOT))
+
+from abclibs import account as libs_account
+from abclibs import config as libs_config
+from abclibs import dex_config as libs_dex_config
+from abclibs import price_async as libs_price_async
+
 DEBUG = libs_config.DEBUG
 
 # 测试环境域名:https://risk.wtest.club/
