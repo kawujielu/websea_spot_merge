@@ -10,7 +10,9 @@ symbol: "WBS-USDT"
 # Binance 参考价
 binance_host: "https://api.binance.com"
 ref_symbol: "BNBUSDT"
-bnb_amplify: 5            # BNB 相对涨跌放大倍数：BNB+1% → mid+5%
+# BNB 相对涨跌放大倍数（区分多空）
+bnb_amplify_long: 4       # 做多/上涨：BNB+1% → mid+4%
+bnb_amplify_short: 6      # 做空/下跌：BNB-1% → mid-6%
 
 # 初始 mid：留空则启动时读 WBS 盘口中间价
 initial_mid:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-WBS 现货铺单：mid 跟随 Binance BNB 相对涨跌并按 bnb_amplify 放大（默认 5x）；
+WBS 现货铺单：mid 跟随 Binance BNB 相对涨跌并按倍数放大（做多/上涨默认 4x，做空/下跌默认 6x）；
 买卖各挂 order_count 单，单边总金额 order_amount USDT，随机拆份后按从小到大分配到近->远档。
 
 方案 B：
@@ -387,8 +387,16 @@ class WbsBnbMaker:
         self.order_count = max(1, int(cfg_get(cfg, "order_count", 50)))
         self.order_amount = float(cfg_get(cfg, "order_amount", 10))
         self.price_ratio = float(cfg_get(cfg, "price_ratio", 0.0002))
-        # BNB 相对涨跌对 mid 的放大倍数：BNB 涨 1% → mid 涨 amplify%
-        self.bnb_amplify = float(cfg_get(cfg, "bnb_amplify", 5))
+        # BNB 相对涨跌对 mid 的放大倍数（区分多空）：
+        # 上涨(做多跟随)：BNB+1% → mid+long%；下跌(做空跟随)：BNB-1% → mid-short%
+        legacy = cfg_get(cfg, "bnb_amplify", None)
+        legacy_amp = float(legacy) if legacy is not None else None
+        self.bnb_amplify_long = float(
+            cfg_get(cfg, "bnb_amplify_long", legacy_amp if legacy_amp is not None else 4)
+        )
+        self.bnb_amplify_short = float(
+            cfg_get(cfg, "bnb_amplify_short", legacy_amp if legacy_amp is not None else 6)
+        )
         self.loop_interval = float(cfg_get(cfg, "loop_interval_sec", 3))
         self.yaml_reload_sec = float(cfg_get(cfg, "yaml_reload_sec", 300))
         self.dry_run = bool(cfg_get(cfg, "dry_run", True))
@@ -428,12 +436,14 @@ class WbsBnbMaker:
             self.rebuild_usdt_splits()
 
         print(
-            "[CFG] symbol={} order_count={} order_amount(total/side)={} ratio={} bnb_amplify={}x interval={}s dry_run={}".format(
+            "[CFG] symbol={} order_count={} order_amount(total/side)={} ratio={} "
+            "bnb_amplify long={}x/short={}x interval={}s dry_run={}".format(
                 self.symbol,
                 self.order_count,
                 self.order_amount,
                 self.price_ratio,
-                self.bnb_amplify,
+                self.bnb_amplify_long,
+                self.bnb_amplify_short,
                 self.loop_interval,
                 self.dry_run,
             )
@@ -487,13 +497,21 @@ class WbsBnbMaker:
         bnb = fetch_binance_price(self.binance_host, self.ref_symbol)
         if self.last_bnb is None or self.mid is None:
             self.last_bnb = bnb
-            print("[BNB] init {} mid={} amplify={}x".format(bnb, self.mid, self.bnb_amplify))
+            print(
+                "[BNB] init {} mid={} amplify long={}x/short={}x".format(
+                    bnb, self.mid, self.bnb_amplify_long, self.bnb_amplify_short
+                )
+            )
             return
         if self.last_bnb > 0:
             bnb_ratio = bnb / self.last_bnb
             if bnb_ratio != 1.0:
-                # mid 按 BNB 相对涨跌 * amplify：1 + amplify * (bnb_ratio - 1)
-                amp = float(self.bnb_amplify)
+                # 上涨用做多倍数，下跌用做空倍数：1 + amp * (bnb_ratio - 1)
+                amp = (
+                    float(self.bnb_amplify_long)
+                    if bnb_ratio > 1.0
+                    else float(self.bnb_amplify_short)
+                )
                 mid_ratio = 1.0 + amp * (bnb_ratio - 1.0)
                 # 极端行情保护：mid 不得 <= 0
                 if mid_ratio <= 0:
@@ -505,12 +523,14 @@ class WbsBnbMaker:
                 else:
                     old = self.mid
                     self.mid = old * mid_ratio
+                    side = "long" if bnb_ratio > 1.0 else "short"
                     print(
-                        "[BNB] {} -> {} bnb_chg={:+.6%} mid_chg={:+.6%} ({}x) mid {} -> {}".format(
+                        "[BNB] {} -> {} bnb_chg={:+.6%} mid_chg={:+.6%} ({} {}x) mid {} -> {}".format(
                             self.last_bnb,
                             bnb,
                             bnb_ratio - 1.0,
                             mid_ratio - 1.0,
+                            side,
                             amp,
                             old,
                             self.mid,
